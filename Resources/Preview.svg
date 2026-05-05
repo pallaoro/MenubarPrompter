@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 480" width="1600" height="480">
+  <defs>
+    <linearGradient id="wallpaper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFE9D6"/>
+      <stop offset="100%" stop-color="#FFC8A8"/>
+    </linearGradient>
+    <filter id="bubbleShadow" x="-10%" y="-10%" width="120%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="6"/>
+      <feOffset dy="5"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.30"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Desktop wallpaper -->
+  <rect width="1600" height="480" fill="url(#wallpaper)"/>
+
+  <!-- macOS menu bar — same black as the bubble so the two read as one shape -->
+  <rect x="0" y="0" width="1600" height="36" fill="#000000"/>
+
+  <!-- Menu bar — left items -->
+  <g font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif"
+     fill="#FFFFFF" font-size="13">
+    <text x="24" y="23" font-weight="600">Menubar Prompter</text>
+    <text x="180" y="23">File</text>
+    <text x="218" y="23">Edit</text>
+    <text x="258" y="23">Prompter</text>
+    <text x="328" y="23">Window</text>
+    <text x="394" y="23">Help</text>
+  </g>
+
+  <!-- Menu bar — right items -->
+  <g font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif"
+     fill="#FFFFFF" font-size="13" text-anchor="end">
+    <text x="1576" y="23">Mon 11:08</text>
+  </g>
+
+  <!-- Camera lens — centered in the menu bar, no border, slight gray tint -->
+  <circle cx="800" cy="18" r="5" fill="#4A4A4A"/>
+  <circle cx="800" cy="18" r="2.4" fill="#1A1A1A"/>
+  <circle cx="801.4" cy="16.6" r="0.9" fill="#FFFFFF" opacity="0.6"/>
+
+  <!-- Prompter bubble (520 × 150) docked under the menu bar.
+       Geometry matches the app's PrompterBubbleShape: full-width flat top
+       with sharp 90° corners, concave scoops cutting inward to a narrower
+       body, rounded bottom corners. sideRadius=22, bottomRadius=24. -->
+  <g transform="translate(540, 36)">
+    <path d="M 0 0
+             L 520 0
+             Q 498 0 498 22
+             L 498 126
+             A 24 24 0 0 1 474 150
+             L 46 150
+             A 24 24 0 0 1 22 126
+             L 22 22
+             Q 22 0 0 0 Z"
+          fill="#000000"
+          filter="url(#bubbleShadow)"/>
+
+    <!-- Teleprompter sample lines — dim / bright / bright / dim -->
+    <g font-family="ui-monospace, 'SF Mono', Menlo, Monaco, monospace"
+       font-weight="500" font-size="17" text-anchor="middle" fill="#FFFFFF">
+      <text x="260" y="46" opacity="0.30">right at your camera —</text>
+      <text x="260" y="76" opacity="1.00">so you keep eye contact</text>
+      <text x="260" y="106" opacity="1.00">and stay on track.</text>
+      <text x="260" y="136" opacity="0.22">press space to play</text>
+    </g>
+  </g>
+</svg>
