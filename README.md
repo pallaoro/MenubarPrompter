@@ -4,11 +4,11 @@ A minimal open-source teleprompter for macOS. Pins itself to the very top of the
 
 ## Download
 
-Grab the latest `.app` from the [Releases page](https://github.com/pallaoro/MenubarPrompter/releases).
+Grab the latest build from the [Releases page](https://github.com/pallaoro/MenubarPrompter/releases).
 
-1. Download `MenubarPrompter-<version>.zip` and unzip it.
-2. Drag **Menubar Prompter.app** into your `/Applications` folder.
-3. **First launch**: right-click the app → **Open** → confirm the Gatekeeper prompt.
+1. Download `MenubarPrompter-<version>.dmg`.
+2. Open it and drag **Menubar Prompter** into the Applications folder shown.
+3. **First launch**: right-click the app in `/Applications` → **Open** → confirm the Gatekeeper prompt.
 
 The app is not signed by Apple yet, so macOS asks for confirmation the first time. If macOS refuses to open it at all (newer Gatekeeper versions), run once in Terminal:
 
@@ -59,6 +59,13 @@ To produce a standalone `.app` bundle (universal arm64+x86_64, ad-hoc signed):
 ```bash
 ./Scripts/build-app.sh --version 0.1.0
 open "dist/Menubar Prompter.app"
+```
+
+To wrap that into a drag-to-Applications `.dmg` (requires `brew install create-dmg`):
+
+```bash
+./Scripts/build-dmg.sh --version 0.1.0
+open "dist/MenubarPrompter-0.1.0.dmg"
 ```
 
 ## Releasing

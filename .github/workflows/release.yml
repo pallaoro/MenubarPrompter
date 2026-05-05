@@ -18,8 +18,14 @@ jobs:
         id: version
         run: echo "version=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
 
+      - name: Install create-dmg
+        run: brew install create-dmg
+
       - name: Build .app bundle
         run: ./Scripts/build-app.sh --version "${{ steps.version.outputs.version }}"
+
+      - name: Build .dmg
+        run: ./Scripts/build-dmg.sh --version "${{ steps.version.outputs.version }}"
 
       - name: Zip the .app
         working-directory: dist
@@ -28,14 +34,24 @@ jobs:
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/MenubarPrompter-${{ steps.version.outputs.version }}.zip
+          files: |
+            dist/MenubarPrompter-${{ steps.version.outputs.version }}.dmg
+            dist/MenubarPrompter-${{ steps.version.outputs.version }}.zip
           generate_release_notes: true
           name: "v${{ steps.version.outputs.version }}"
           body: |
             ## Install
 
-            1. Download `MenubarPrompter-${{ steps.version.outputs.version }}.zip` below.
-            2. Unzip and drag **Menubar Prompter.app** into your `/Applications` folder.
-            3. **First launch**: right-click the app → **Open** → confirm the Gatekeeper prompt. (The app is not signed by Apple yet, so macOS asks once.)
+            **Recommended — drag to Applications:**
+
+            1. Download `MenubarPrompter-${{ steps.version.outputs.version }}.dmg` below.
+            2. Open the DMG and drag **Menubar Prompter** into the Applications folder shown.
+            3. **First launch**: right-click the app in `/Applications` → **Open** → confirm the Gatekeeper prompt. (The app is not signed by Apple yet, so macOS asks once.)
+
+            <details>
+            <summary>Alternate — zip download</summary>
+
+            Download `MenubarPrompter-${{ steps.version.outputs.version }}.zip`, unzip, drag into `/Applications`, then right-click → Open on first launch.
+            </details>
 
             That's it — the prompter docks under your menu bar.
