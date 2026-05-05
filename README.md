@@ -2,6 +2,8 @@
 
 A minimal open-source teleprompter for macOS. Sits as a discreet floating bubble right under your menu bar — directly below the camera notch — so you can keep eye contact while you read.
 
+<img width="750" height="305" alt="Image" src="https://github.com/user-attachments/assets/6beea97b-042d-4410-972b-4e9da62a33c2" />
+
 ## Features
 
 - Borderless bubble window auto-positioned under the menu bar
