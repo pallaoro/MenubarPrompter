@@ -2,6 +2,8 @@
 
 A minimal open-source teleprompter for macOS. Pins itself to the very top of the screen — flush under the camera — so you keep eye contact while you read.
 
+<img width="750" height="305" alt="Image" src="https://github.com/user-attachments/assets/6beea97b-042d-4410-972b-4e9da62a33c2" />
+
 ## Download
 
 Grab the latest build from the [Releases page](https://github.com/pallaoro/MenubarPrompter/releases).
@@ -17,8 +19,6 @@ xattr -cr "/Applications/Menubar Prompter.app"
 ```
 
 Requires macOS 14 or newer.
-
-<img width="750" height="305" alt="Image" src="https://github.com/user-attachments/assets/6beea97b-042d-4410-972b-4e9da62a33c2" />
 
 ## Features
 
