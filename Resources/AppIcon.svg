@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFB458"/>
+      <stop offset="55%" stop-color="#FF6E7F"/>
+      <stop offset="100%" stop-color="#E94670"/>
+    </linearGradient>
+    <linearGradient id="bubble" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1A1A1A"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </linearGradient>
+  </defs>
+
+  <!-- App-icon rounded square (Mac style) -->
+  <rect x="0" y="0" width="1024" height="1024" rx="224" ry="224" fill="url(#bg)"/>
+
+  <!-- Subtle inner glow band at the top to suggest stage / spotlight -->
+  <rect x="0" y="0" width="1024" height="220" rx="224" ry="224" fill="#FFFFFF" opacity="0.08"/>
+
+  <!-- Camera lens above the prompter bubble -->
+  <circle cx="512" cy="220" r="26" fill="#FFFFFF" opacity="0.95"/>
+  <circle cx="512" cy="220" r="11" fill="#1B1B1B"/>
+  <circle cx="517" cy="215" r="3" fill="#FFFFFF" opacity="0.7"/>
+
+  <!-- Prompter bubble: full-width flat top with sharp 90° corners, concave
+       scoops cutting inward to a narrower body, rounded bottom — same
+       geometry as the app's PrompterBubbleShape. -->
+  <path d="M 152 300
+           L 872 300
+           Q 812 300 812 360
+           L 812 696
+           A 64 64 0 0 1 748 760
+           L 276 760
+           A 64 64 0 0 1 212 696
+           L 212 360
+           Q 212 300 152 300 Z"
+        fill="url(#bubble)"/>
+
+  <!-- Soft drop shadow under the bubble -->
+  <ellipse cx="512" cy="788" rx="280" ry="12" fill="#000000" opacity="0.18"/>
+
+  <!-- Four text lines inside the body — dim / bright / bright / dim -->
+  <rect x="262" y="438" width="500" height="22" rx="11" fill="#FFFFFF" opacity="0.34"/>
+  <rect x="232" y="494" width="560" height="32" rx="16" fill="#FFFFFF"/>
+  <rect x="272" y="560" width="480" height="32" rx="16" fill="#FFFFFF"/>
+  <rect x="312" y="626" width="400" height="22" rx="11" fill="#FFFFFF" opacity="0.22"/>
+</svg>

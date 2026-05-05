@@ -22,8 +22,8 @@ final class PrompterStore {
     init() {
         let d = UserDefaults.standard
         self.script = d.string(forKey: "mp.script") ?? Self.defaultScript
-        self.scrollSpeed = (d.object(forKey: "mp.scrollSpeed") as? Double) ?? 40
-        self.fontSize = (d.object(forKey: "mp.fontSize") as? Double) ?? 30
+        self.scrollSpeed = (d.object(forKey: "mp.scrollSpeed") as? Double) ?? 30
+        self.fontSize = (d.object(forKey: "mp.fontSize") as? Double) ?? 18
     }
 
     func currentOffset(at date: Date) -> CGFloat {
