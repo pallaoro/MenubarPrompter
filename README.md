@@ -32,7 +32,7 @@ Requires macOS 14 or newer.
 
 ## Keyboard shortcuts
 
-These work whenever the prompter window is focused.
+These work whenever **Menubar Prompter is the frontmost app** (e.g. just clicked it from the Dock or via ⌘-Tab). In v0.1 the bubble is intentionally a non-activating panel so it can overlay other apps' full-screen mode — the trade-off is that key events only reach the app while it's active. Use the editor sliders for fine control during a recording.
 
 | Key       | Action                       |
 | --------- | ---------------------------- |
@@ -72,6 +72,8 @@ git push origin v0.1.0
 
 ## Roadmap
 
+- Global keyboard shortcuts (Carbon hotkeys) so play/pause/speed work without focusing the app
+- Wing height that grows to menu-bar height in full-screen mode (so the scoops sit at the same y position)
 - Voice-activated scrolling (pause when you pause)
 - Hover-to-pause
 - Countdown before start

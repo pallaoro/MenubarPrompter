@@ -16,6 +16,11 @@ final class PrompterStore {
 
     var isPlaying: Bool = false
 
+    /// Height of the flat wing above the concave scoops. 0 in normal mode
+    /// (the visible menu bar fills that role); equals the menu-bar height in
+    /// full-screen mode so the scoops sit at the same on-screen position.
+    var wingHeight: CGFloat = 0
+
     private(set) var baseOffset: CGFloat = 0
     private(set) var baseDate: Date = .init()
 

@@ -3,14 +3,12 @@ import SwiftUI
 struct PrompterView: View {
     @Bindable var store: PrompterStore
 
-    // Top edge spans the full width; the concave scoops cut INWARD on each
-    // side, transitioning down to a narrower body. The scoop height equals
-    // sideRadius — there is no straight section above it.
     private let sideRadius: CGFloat = 22
     private let bottomRadius: CGFloat = 24
 
     var body: some View {
         let shape = PrompterBubbleShape(
+            wingHeight: store.wingHeight,
             sideRadius: sideRadius,
             bottomRadius: bottomRadius
         )
@@ -21,7 +19,7 @@ struct PrompterView: View {
             TimelineView(.animation(minimumInterval: 1.0 / 60.0, paused: !store.isPlaying)) { ctx in
                 ScrollingText(store: store, offset: store.currentOffset(at: ctx.date))
             }
-            .padding(.top, sideRadius)
+            .padding(.top, store.wingHeight + sideRadius)
             .padding(.horizontal, sideRadius + 8)
             .padding(.bottom, bottomRadius / 2)
         }
@@ -30,6 +28,7 @@ struct PrompterView: View {
 }
 
 struct PrompterBubbleShape: Shape {
+    var wingHeight: CGFloat
     var sideRadius: CGFloat
     var bottomRadius: CGFloat
 
@@ -39,16 +38,17 @@ struct PrompterBubbleShape: Shape {
         let h = rect.height
         let bR = max(0, min(bottomRadius, w / 2, h / 2))
         let sR = max(0, min(sideRadius, w / 2 - bR, h / 2))
+        let wH = max(0, min(wingHeight, h - sR - bR))
 
         // Top-left sharp 90° corner.
         p.move(to: CGPoint(x: 0, y: 0))
         // Full-width flat top edge.
         p.addLine(to: CGPoint(x: w, y: 0))
-        // Right concave scoop — curve cuts inward from the corner down to the
-        // narrower body. Control at the far end of the top edge so the tangent
-        // arrives vertically at the body's right edge.
-        p.addQuadCurve(to: CGPoint(x: w - sR, y: sR),
-                       control: CGPoint(x: w - sR, y: 0))
+        // Right wing — straight down to where the scoop starts.
+        p.addLine(to: CGPoint(x: w, y: wH))
+        // Right concave scoop.
+        p.addQuadCurve(to: CGPoint(x: w - sR, y: wH + sR),
+                       control: CGPoint(x: w - sR, y: wH))
         // Body right edge.
         p.addLine(to: CGPoint(x: w - sR, y: h - bR))
         // Bottom-right convex corner.
@@ -62,10 +62,12 @@ struct PrompterBubbleShape: Shape {
                  tangent2End: CGPoint(x: sR, y: h - bR),
                  radius: bR)
         // Body left edge.
-        p.addLine(to: CGPoint(x: sR, y: sR))
-        // Left concave scoop — mirror of the right.
-        p.addQuadCurve(to: CGPoint(x: 0, y: 0),
-                       control: CGPoint(x: sR, y: 0))
+        p.addLine(to: CGPoint(x: sR, y: wH + sR))
+        // Left concave scoop.
+        p.addQuadCurve(to: CGPoint(x: 0, y: wH),
+                       control: CGPoint(x: sR, y: wH))
+        // Left wing — straight up to the top.
+        p.addLine(to: CGPoint(x: 0, y: 0))
         p.closeSubpath()
         return p
     }

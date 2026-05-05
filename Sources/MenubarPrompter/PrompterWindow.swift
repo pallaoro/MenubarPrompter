@@ -2,12 +2,30 @@ import AppKit
 import SwiftUI
 
 @MainActor
-final class PrompterWindow: NSWindow {
+final class PrompterWindow: NSPanel {
+    private let store: PrompterStore
+    private let bodyContentHeight: CGFloat = 100
+    private let scoopHeight: CGFloat = 22
+    private let bottomRadius: CGFloat = 24
+    /// Last-seen menu-bar height when the menu bar was visible. Used as the
+    /// wing height in full-screen mode (when the menu bar is hidden).
+    private var referenceMenuBarHeight: CGFloat = 24
+    private var observers: [NSObjectProtocol] = []
+
     init(store: PrompterStore) {
-        let initial = NSRect(x: 0, y: 0, width: 520, height: 150)
+        self.store = store
+
+        let initialHeight = scoopHeight + bodyContentHeight + bottomRadius
+        let initial = NSRect(x: 0, y: 0, width: 520, height: initialHeight)
         super.init(
             contentRect: initial,
-            styleMask: [.borderless],
+            // .nonactivatingPanel is required to overlay other apps'
+            // full-screen Spaces. Side-effect: the app stays in the
+            // background when the bubble is clicked, so the local key-event
+            // monitor doesn't fire. In v0.1 keyboard shortcuts are therefore
+            // only effective when the app is the frontmost app (e.g. via
+            // the Dock or Cmd-Tab).
+            styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
             defer: false
         )
@@ -15,32 +33,95 @@ final class PrompterWindow: NSWindow {
         isOpaque = false
         backgroundColor = .clear
         hasShadow = true
-        // .statusBar (25) sits one above .mainMenu (24), so the bubble paints
-        // over the menu bar at the top of the screen and stays visible when
-        // other apps come forward.
-        level = .statusBar
-        collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]
+        // .screenSaver (1000) is above the system "shielding" level used by
+        // macOS for full-screen apps, so the bubble paints over them too.
+        level = .screenSaver
+        collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         isMovable = false
         isMovableByWindowBackground = false
         isReleasedWhenClosed = false
         sharingType = .none
         hidesOnDeactivate = false
         canHide = false
+        worksWhenModal = true
 
         contentView = NSHostingView(rootView: PrompterView(store: store))
-        positionAtTopOfScreen()
+
+        // Active-space change fires whenever the user swipes between Spaces,
+        // including in/out of a full-screen app's Space.
+        observers.append(
+            NSWorkspace.shared.notificationCenter.addObserver(
+                forName: NSWorkspace.activeSpaceDidChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                MainActor.assumeIsolated { self?.scheduleSync() }
+            }
+        )
+
+        // Frontmost-app change is a strong proxy for entering/leaving a
+        // full-screen Space (each full-screen app lives in its own Space and
+        // has its own frontmost transition).
+        observers.append(
+            NSWorkspace.shared.notificationCenter.addObserver(
+                forName: NSWorkspace.didActivateApplicationNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                MainActor.assumeIsolated { self?.scheduleSync() }
+            }
+        )
+
+        syncWithCurrentSpace()
+    }
+
+    deinit {
+        for o in observers {
+            NotificationCenter.default.removeObserver(o)
+            NSWorkspace.shared.notificationCenter.removeObserver(o)
+        }
     }
 
     override var canBecomeKey: Bool { true }
     override var canBecomeMain: Bool { true }
 
-    func positionAtTopOfScreen() {
+    /// Defer the sync slightly so AppKit has time to settle the new state
+    /// (NSScreen / presentation options can lag the notification by a frame).
+    private func scheduleSync() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
+            self?.syncWithCurrentSpace()
+        }
+    }
+
+    /// Recompute wing height + window size based on whether the menu bar is
+    /// currently visible (normal Space) or hidden (full-screen Space).
+    private func syncWithCurrentSpace() {
         guard let screen = NSScreen.main else { return }
+
+        let opts = NSApplication.shared.currentSystemPresentationOptions
+        let menuBarHidden =
+            opts.contains(.fullScreen) ||
+            opts.contains(.autoHideMenuBar) ||
+            opts.contains(.hideMenuBar)
+
+        if !menuBarHidden {
+            // Normal Space: sample the live menu-bar height for later use,
+            // and keep the bubble flush at the top with no wing.
+            let measured = screen.frame.maxY - screen.visibleFrame.maxY
+            if measured > 0 { referenceMenuBarHeight = measured }
+            store.wingHeight = 0
+        } else {
+            // Full-screen Space: pad the bubble with a wing the size of the
+            // (now-hidden) menu bar so the scoops sit at the same y position.
+            store.wingHeight = referenceMenuBarHeight
+        }
+
+        let totalHeight = store.wingHeight + scoopHeight + bodyContentHeight + bottomRadius
         let screenFrame = screen.frame
-        let w = frame.width
-        let h = frame.height
-        let x = screenFrame.midX - w / 2
-        let y = screenFrame.maxY - h
-        setFrameOrigin(NSPoint(x: x, y: y))
+        let x = screenFrame.midX - frame.width / 2
+        let y = screenFrame.maxY - totalHeight
+        setFrame(NSRect(x: x, y: y, width: frame.width, height: totalHeight),
+                 display: true,
+                 animate: false)
     }
 }
