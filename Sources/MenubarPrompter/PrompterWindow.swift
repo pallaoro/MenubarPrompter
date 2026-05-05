@@ -16,7 +16,7 @@ final class PrompterWindow: NSPanel {
         self.store = store
 
         let initialHeight = scoopHeight + bodyContentHeight + bottomRadius
-        let initial = NSRect(x: 0, y: 0, width: 520, height: initialHeight)
+        let initial = NSRect(x: 0, y: 0, width: 420, height: initialHeight)
         super.init(
             contentRect: initial,
             // .nonactivatingPanel is required to overlay other apps'
@@ -84,6 +84,20 @@ final class PrompterWindow: NSPanel {
 
     override var canBecomeKey: Bool { true }
     override var canBecomeMain: Bool { true }
+
+    /// Manual scroll: the SwiftUI text view doesn't handle scroll events on
+    /// its own, so they bubble up to the window. We use the y delta to nudge
+    /// the prompter offset, letting the user jump to a specific line.
+    override func scrollWheel(with event: NSEvent) {
+        let delta = event.scrollingDeltaY
+        if delta != 0 {
+            // scrollingDeltaY follows the system's "natural" scrolling
+            // setting: fingers up → positive → reveal upcoming lines.
+            store.scroll(by: delta)
+        } else {
+            super.scrollWheel(with: event)
+        }
+    }
 
     /// Defer the sync slightly so AppKit has time to settle the new state
     /// (NSScreen / presentation options can lag the notification by a frame).

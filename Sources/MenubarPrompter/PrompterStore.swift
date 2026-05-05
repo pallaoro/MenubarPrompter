@@ -27,8 +27,8 @@ final class PrompterStore {
     init() {
         let d = UserDefaults.standard
         self.script = d.string(forKey: "mp.script") ?? Self.defaultScript
-        self.scrollSpeed = (d.object(forKey: "mp.scrollSpeed") as? Double) ?? 30
-        self.fontSize = (d.object(forKey: "mp.fontSize") as? Double) ?? 18
+        self.scrollSpeed = (d.object(forKey: "mp.scrollSpeed") as? Double) ?? 24
+        self.fontSize = (d.object(forKey: "mp.fontSize") as? Double) ?? 14
     }
 
     func currentOffset(at date: Date) -> CGFloat {
@@ -50,6 +50,13 @@ final class PrompterStore {
     func adjustSpeed(by delta: Double) {
         rebase()
         scrollSpeed = max(5, min(240, scrollSpeed + delta))
+    }
+
+    /// Manually nudge the scroll position. Works whether or not playback is
+    /// active — when playing, the animation continues from the new offset.
+    func scroll(by delta: CGFloat) {
+        rebase()
+        baseOffset = max(0, baseOffset + delta)
     }
 
     private func rebase() {

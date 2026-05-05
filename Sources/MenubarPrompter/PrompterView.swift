@@ -20,8 +20,7 @@ struct PrompterView: View {
                 ScrollingText(store: store, offset: store.currentOffset(at: ctx.date))
             }
             .padding(.top, store.wingHeight + sideRadius)
-            .padding(.horizontal, sideRadius + 8)
-            .padding(.bottom, bottomRadius / 2)
+            .padding(.horizontal, sideRadius + 20)
         }
         .clipShape(shape)
     }
